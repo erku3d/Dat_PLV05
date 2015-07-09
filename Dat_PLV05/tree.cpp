@@ -12,7 +12,7 @@ Tree::~Tree()
 	deleteTree(root);
 } 
 
-void Tree::deleteTree(node* n){
+void Tree::deleteTree(treeNode* n){
 	//löschen von n und aller Kinder von n
 	
 	if(n){
@@ -26,7 +26,8 @@ void Tree::deleteTree(node* n){
 		if(n->s)
 			delete n->s;
 			
-		delete n;		
+		delete n;
+		
 	}
 	
 }
@@ -45,17 +46,12 @@ int Tree::isOperator(char c){
 }
 
 
-Tree::node* Tree::generateTree(char* str, int &pos){
-	
-	node* n = 0;
-		
-	if(pos<0)
-		return n;
-		
+Tree::treeNode* Tree::generateTree(char* str, int &pos){
+
 	if(str[pos] == ')' && pos>0){  //erzeuge Teilbaum, falls schließende Klammer 
 		pos--;
 		
-		n = new node;
+		treeNode* n = new treeNode;
 	
 		n->s     = 0;
 		n->left  = 0;
@@ -78,13 +74,12 @@ Tree::node* Tree::generateTree(char* str, int &pos){
 		
 		return n;
 			
-	}
-		
-	if(isOperator(str[pos]) == 0 && pos >= 0){ //falls Zahl oder Buchstabe
+	}		
+	else if(isOperator(str[pos]) == 0 && pos >= 0){ //falls Zahl oder Buchstabe
 		
 		//Blattknoten
 		
-		n = new node;
+		treeNode* n = new treeNode;
 		n->left  = 0;
 		n->right = 0;
 		n->isLeaf = true;
@@ -113,11 +108,12 @@ Tree::node* Tree::generateTree(char* str, int &pos){
 		
 		return n;
 	}
-	
-	
-	pos--;		
-	return n;
-	
+	else{
+		printf("Fehlerhafte Eingabe!\n");
+		pos--;
+		return 0;
+		
+	}
 }
 
 void Tree::generateTreeFromCharArray(char* str){
@@ -134,7 +130,7 @@ void Tree::generateTreeFromCharArray(char* str){
 	
 }
 
-void Tree::traversePostOrder(node* n, List* s){
+void Tree::traversePostOrder(treeNode* n, List* s){
 	if(n){
 		traversePostOrder(n->left,s);
 		traversePostOrder(n->right,s);
@@ -143,6 +139,37 @@ void Tree::traversePostOrder(node* n, List* s){
 		s->append(' '); //Leerzeichen, um Vorzeichen von Operanden zu unterscheiden
 	}
 }
+
+void Tree::traversePraeOrder(treeNode* n, List* s){
+	if(n){
+		s->append(n->s);
+		s->append(' '); //Leerzeichen, um Vorzeichen von Operanden zu unterscheiden
+		
+		traversePraeOrder(n->left,s);
+		traversePraeOrder(n->right,s);
+
+	}
+}
+
+void Tree::generateExpression(treeNode* n, List* s){
+	
+	if(n){
+		
+		if(n->isLeaf){
+			s->push(n->s);
+			return;
+		}
+		
+		s->push(')');
+		generateExpression(n->right, s);
+		s->push(n->s);
+		generateExpression(n->left, s);
+		s->push('(');
+
+	}
+	
+}
+
 
 char* Tree::ausgabePostorder(){
 	
@@ -157,6 +184,20 @@ char* Tree::ausgabePostorder(){
 	return s;
 }
 
+char* Tree::ausgabePraeorder(){
+	
+	List* tmp= new List();
+
+	traversePraeOrder(root, tmp);
+	
+	char* s = tmp->toString();
+	
+	delete tmp;
+	
+	return s;
+}
+
+
 int Tree::charToInt(char c){
 	
 	if( (int)c >= (int)'0' && (int)c <= (int)'9' )
@@ -165,17 +206,19 @@ int Tree::charToInt(char c){
 		return -1;
 }
 
-char c Tree::intToChar(int i){
+char Tree::intToChar(int i){
 	
 	if(i>9)
-		return '\0'
+		return '\0';
 		
 	
 	return (char)((int)'0' + i);
 
 }
 
-List* intToList(int i){
+List* Tree::intToList(int i){
+	
+	//umwandeln von Integer in Liste
 	
 	List* li = new List();
 	
@@ -186,21 +229,25 @@ List* intToList(int i){
 		return li;
 	}
 	
+	//Test auf Vorzeichen
 	bool neg = false;
+	
 	if(i<0){
 		neg = true;
 		i *= -1;
 	}
 	
+	//Werte von rechts nach links Umwandeln
 	while(i > 0){
 		
 		tmp = i % 10;
 		
-		li->push(intToChar(tmp));
+		li->push( intToChar(tmp) );
 		
 		i=i/10;	
 	}
 	
+	//Vorzeichen hinzufügen
 	if(neg)
 		li->push('-');
 	
@@ -263,17 +310,13 @@ bool Tree::isNumber(char* str, int& value){
 
 List* Tree::simplify(List* v1, List* v2, List* op){	
 	
-	
-	List* result = 0;
 
 	char* str1 = v1->toString();
 	char* str2 = v2->toString();
 	char* str3 = op->toString();
 	
 	char oper = str3[0];
-	
-	printf("simpl: |%s| |%s| \n",str1,str2);
-	
+		
 	//Testen, ob die Übergeben Operanden Zahlen sind 
 	//(in val1 und val2 stehend diese dann drin)
 	
@@ -281,30 +324,177 @@ List* Tree::simplify(List* v1, List* v2, List* op){
 	bool v1Number = isNumber(str1,val1);
 	bool v2Number = isNumber(str2,val2);
 	
+	delete[] str1;
+	delete[] str2;
+	delete[] str3;
+	
+	//beide Operanten sind Zahlen
 	if(v1Number && v2Number){
 		
 		switch(oper){
 			case '+': erg = val1 + val2; break;
 			case '-': erg = val1 - val2; break;
-			case '*': erg = val1 - val2; break;
+			case '*': erg = val1 * val2; break;
 			default : ; //Fehler
 		}
 		
-		//ergebniss in zeichenkette Umwandeln
+		//Ergebnis in Liste Umwandeln
+		return intToList(erg);	
+	}
+	
+	//Vereinfachung bei Multiplikation
+	if(oper == '*'){
 		
+		//falls einer der Operanden 0
+		if((v1Number && val1 == 0) || (v2Number && val2 == 0)){
+						
+			List* result = new List();
+			result->push('0');
+			
+			return 	result;		
+		}
+		
+		//falls einer der Operanden 1
+		if(v1Number && val1 == 1){
+			List* result = new List();
+			result->push(v2);
+			
+			return 	result;	
+		}
+		
+		if(v2Number && val2 == 1){
+			List* result = new List();
+			result->push(v1);
+			
+			return 	result;	
+		}
+		
+		//falls einer der Operanden -1 -> Vorzeichenwechsel 
+		//-1 * a = -a
+		if(v1Number && val1 == -1){
+			
+			List* result = new List();
+			
+			char vz = v2->pop();  //entferne das erste Zeichen
+			
+			if(vz == '-'){		//Falls minus	
+				result->push(v2);								
+			}
+			else{
+				v2->push(vz);
+				result->push(v2);
+				result->push('-');
+			}
+						
+			return 	result;	
+		}
+		
+		if(v2Number && val2 == -1){ //-> a * -1 = -a
+			
+			List* result = new List();
+			
+			char vz = v1->pop();  //entferne das erste Zeichen
+			
+			if(vz == '-'){		//Falls minus	
+				result->push(v1);								
+			}
+			else{
+				v1->push(vz);
+				result->push(v1);
+				result->push('-');
+			}
+						
+			return 	result;	
+		}
+	}
+	
+	//Vereinfachung bei Addition 
+	if(oper == '+'){
+		
+		//falls einer der Operanden 0
+		if(v1Number && val1 == 0){
+			List* result = new List();
+			result->push(v2);
+			
+			return 	result;	
+		}
+		
+		if(v2Number && val2 == 0){
+			List* result = new List();
+			result->push(v1);
+			
+			return 	result;	
+		}
+		
+		//-a + a = 0 
+		if(!v1Number && !v2Number){
+			
+			char vz = v1->pop();  //entferne das erste Zeichen
+			
+			if(vz == '-'){
+								
+				if(v1->isEqual(v2)){  //falls beide Operanden gleich 
+					List* result = new List();
+					result->push('0');
+				
+					return 	result;	
+				}
+			}
+				
+			v1->push(vz);
+			return 0;	
+		}
+	}
+		
+	//Vereinfachung bei Addition 
+	if(oper == '-'){
+		
+		// 0 - Operand = -Opeand -> Vorzeichenwechsel
+		if(v1Number && val1 == 0){  
+			List* result = new List();
+			
+			char vz = v2->pop();  //entferne das erste Zeichen
+			
+			if(vz == '-'){		//Falls minus	
+				result->push(v2);								
+			}
+			else{
+				v2->push(vz);
+				result->push(v2);
+				result->push('-');
+			}
+						
+			return 	result;	
+		}
+		
+		//Operand - 0 = Operand
+		if(v2Number && val2 == 0){
+			List* result = new List();
+			result->push(v2);
+			
+			return 	result;	
+		}
+		
+		//a - a = 0 
+		if(!v1Number && !v2Number){
+			
+			if(v1->isEqual(v2)){
+				List* result = new List();
+				result->push('0');
+			
+				return 	result;	
+			}
+		}
 		
 	}
 	
-	
-	delete str1,str2,str3;
-	
-	return result;
+	return 0;
 	
 }
 
 
 
-void Tree::optimizeTree(node* n){
+void Tree::optimizeTree(treeNode* n){
 	
 	if(!n)
 		return;
@@ -319,28 +509,20 @@ void Tree::optimizeTree(node* n){
 	//falls beide Teilbäume Blattknoten sind
 	if(n->left && n->left->isLeaf && n->right && n->right->isLeaf){
 		
-		char* op = n->s->toString();
-		char* val1 = n->left->s->toString();
-		char* val2 = n->right->s->toString();
-		
-		printf("leaf: %s%s%s\n",val1,op,val2);
-		
-		delete op,val1,val2;
-		
-		//Vereinfachen des Ausdrucks
+				
+		//Vereinfachen des Ausdrucks 
 		List* result = simplify(n->left->s, n->right->s, n->s);
 		
-		//falls erfolgreich
-		if(result){
-			
-			char* str = result->toString();
-			printf("result: |%s|\n",str);
-			delete str;
+		//falls erfolgreich (Zusammenfassen zu einem Knoten möglich)
+		if(result){		
 				
-			//linker und rechte Blätter löschen
+			//linkes und rechtes Blatt löschen
 			
 			deleteTree(n->left);  
 			deleteTree(n->right);
+			
+			n->left = 0;
+			n->right = 0;
 			
 			//der Knoten ist jetzt selbst ein Blatt
 			n->isLeaf = true;
@@ -349,6 +531,34 @@ void Tree::optimizeTree(node* n){
 			delete n->s;
 			n->s=result;
 		}
+		else{
+			
+			char* val1 = n->left->s->toString();
+			char* val2 = n->right->s->toString();
+			
+			char* op = n->s->toString();
+			
+			if(op[0]=='*'){ //-a * -b = a * b
+				
+				if(val1[0]=='-' && val2[0]=='-'){ 
+					n->left->s->pop(); //vorzeichen entfernen
+					n->right->s->pop();
+				}
+				
+			}
+			else if(op[0]=='-'){ //a--b = a + b
+				if(val2[0]=='-'){
+					n->right->s->pop();
+					n->s->pop();
+					n->s->push('+');
+				}
+			}
+			
+			delete[] val1;
+			delete[] val2;
+			delete[] op;
+		}
+			
 	}
 	return;
 }
@@ -356,6 +566,19 @@ void Tree::optimizeTree(node* n){
 
 void Tree::optimieren(){
 	optimizeTree(root);
+}
+
+char* Tree::ausgabeAusdruck(){
+	
+	List* tmp= new List();
+
+	generateExpression(root, tmp);
+	
+	char* s = tmp->toString();
+	
+	delete tmp;
+	
+	return s;
 }
 
 

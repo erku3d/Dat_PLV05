@@ -151,37 +151,43 @@ int main(int argc, const char* argv[]){
 		return 0;
 	}
 	
-	printf("Eingabe: %s\n",argv[1]);
 	
-	char* str = generateDyadicExpression(argv[1]);
 	
-	printf("geklammert: %s \n",str);
+	printf("\nEingabe:\n%s\n\n",argv[1]);
+	
+	char* s = generateDyadicExpression(argv[1]);
+	
+	printf("geklammerter dyadischer Ausdruck:\n%s\n\n",s);
 	 
-	
-	
 	
 	Tree* t = new Tree();
 	
-	t->generateTreeFromCharArray(str);
+	t->generateTreeFromCharArray(s);
 	
-	delete[] str;
+	delete[] s;	
 	
-	char* s = t->ausgabePostorder();
+	s = t->ausgabePostorder();
 		
-	printf("Postorder: \n%s\n",s);
+	printf("Postorder:\n%s\n\n",s);
 	
 	delete[] s;
 	
 	t->optimieren();
 	
+	s = t->ausgabePraeorder();
+		
+	printf("optimierter Ausdrucksbaum in Präorder:\n%s\n\n",s);
 	
-	char c = '0';
+	delete[] s;
+		
+	s = t->ausgabeAusdruck();
 	
-	int i = (int)c - (int)'0';
-	
-	printf("%c -> %d\n",c,i);
+	printf("optimierter Ausdrucksbaums geklammert:\n%s\n\n",s);
 	
 	
+	delete[] s;
+	
+		
 	delete t;
 	
 	return 1;

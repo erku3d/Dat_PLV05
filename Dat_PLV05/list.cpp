@@ -51,7 +51,8 @@ char List::pop(){
 		c = tmp->c;
 		
 		delete tmp;
-				
+			
+		elementCount--;	
 	}	
 	
 	return c;
@@ -194,6 +195,31 @@ char* List::toString(int &len){
 	len = elementCount+1;
 	
 	return toString();
+	
+}
+
+bool List::isEqual(List* li){
+	
+	if(li->getElementCount() != elementCount)
+		return false;
+	
+	char* str1 = toString();
+	char* str2 = li->toString();
+	
+	bool result = true;
+	
+	for(int i=0; i<elementCount; i++){
+		
+		if(str1[i] != str2[i]){
+			result = false;
+			break;
+		}
+	}
+
+	delete str1;
+	delete str2;
+	
+	return result;
 	
 }
 

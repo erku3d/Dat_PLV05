@@ -9,24 +9,27 @@ class Tree
 {
 	private:
 		
-		struct node{
+		struct treeNode{
 			List* s;
 			bool isLeaf;
 			
-			node* left;
-			node* right;			
+			treeNode* left;
+			treeNode* right;			
 		};
 		
-		node* root;
+		treeNode* root;
 		
-		node* generateTree(char* str, int &pos);
+		treeNode* generateTree(char* str, int &pos);
+		
 		int isOperator(char c);
 		
-		void traversePostOrder(node* n, List* s);
+		void traversePostOrder(treeNode* n, List* s);
+		void traversePraeOrder(treeNode* n, List* s);
+		void generateExpression(treeNode* n, List* s);
 		
-		void deleteTree(node* n);
+		void deleteTree(treeNode* n);
 		
-		void optimizeTree(node* n);
+		void optimizeTree(treeNode* n);
 		
 		List* simplify(List* v1, List* v2, List* op);
 		
@@ -42,10 +45,10 @@ class Tree
 		 
 		void generateTreeFromCharArray(char* str);
 		char* ausgabePostorder();
+		char* ausgabePraeorder();
+		char* ausgabeAusdruck();
 		
 		void optimieren();
-	
-	
 	
 };
 

@@ -9,7 +9,7 @@ class List
 			node *pred;
 		};
 		
-	protected:
+	private:
 				
 		node* head;  //Anfang und
 		node* tail;	 //Ende der Liste
@@ -24,17 +24,23 @@ class List
 		~List();	
 				
 		bool isEmpty(){return empty;} 
+		int getElementCount(){return elementCount;}
 		
-		char* toString(); //Ausgabe der Liste als Zeichenkette
+		char* toString(); 		  //Ausgabe der Liste als Zeichenkette
 		char* toString(int &len); //Ausgabe der Liste als Zeichenkette mit Anzahl der Zeichen
 		
 		char pop(); 			//entferen Element vom Anfang Ende der Liste
 		char pull();			//entferen Element vom Ende der Liste
+		
 		void push(char c);  	//am Anfang anfügen
 		void push(List* li);	//Liste am Anfang anfügen
+		
 		void append(char c);	//am Ende anfügen
 		void append(List* li);  //Liste am Ende anfügen
+		
+		bool isEqual(List* li);
 	
 	};
+
 
 #endif /* LIST_H */ 

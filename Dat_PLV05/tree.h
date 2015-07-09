@@ -2,7 +2,7 @@
 #ifndef TREE_H
 #define TREE_H
 
-#include"string.h"
+#include"list.h"
 #include<cstdio>
 
 class Tree
@@ -10,7 +10,7 @@ class Tree
 	private:
 		
 		struct node{
-			String* s;
+			List* s;
 			bool isLeaf;
 			
 			node* left;
@@ -22,7 +22,19 @@ class Tree
 		node* generateTree(char* str, int &pos);
 		int isOperator(char c);
 		
-		void traversePostOrder(node* n, String* s);
+		void traversePostOrder(node* n, List* s);
+		
+		void deleteTree(node* n);
+		
+		void optimizeTree(node* n);
+		
+		List* simplify(List* v1, List* v2, List* op);
+		
+		int charToInt(char c);
+		char intToChar(int i);
+		bool isNumber(char* str, int& value);
+		
+		List* intToList(int i);
 		
 	public:
 		Tree();
@@ -30,6 +42,8 @@ class Tree
 		 
 		void generateTreeFromCharArray(char* str);
 		char* ausgabePostorder();
+		
+		void optimieren();
 	
 	
 	

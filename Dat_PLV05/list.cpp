@@ -15,6 +15,7 @@ List::List()
 
 List::~List()
 {
+	
 	while(head){
 		
 		node* tmp = head;
@@ -84,6 +85,7 @@ char List::pull(){
 }
 
 void List::push(char c){
+	
 	node* n = new node;
 
 	n->c = c;
@@ -106,13 +108,48 @@ void List::push(char c){
 
 
 void List::push(List* li){	
-
 	
+	int len;
+	char *str = li->toString(len);
+		
+	len-=2; //->letztes Zeichen vor'\0' 
+	
+	while(len>=0){
+		push(str[len]);
+		len--;
+	}
+	
+	delete[] str;
+	
+	/*
+	//li ist danach leer!
 	while(!li->isEmpty()){
 		push(li->pull());
 	}
+	*/	
+}
+
+
+void List::append(List* li){
 	
+	char *str = li->toString();
+
+	int len=0;
 	
+	while(str[len]){
+		append(str[len]);
+		len++;
+	}
+	
+	delete[] str;
+	
+		
+	/*
+	//li ist danach leer!
+	while(!li->isEmpty()){
+		append(li->pop());
+	}
+	*/
 }
 
 void List::append(char c){
@@ -138,10 +175,11 @@ void List::append(char c){
 char* List::toString(){
 	
 	char* str = new char[elementCount+1];
-	
+		
 	node* tmp = head;
 	
 	for(int i=0; i<elementCount && tmp; i++){
+				
 		str[i] = tmp->c;
 		tmp = tmp->next;
 	}
@@ -151,6 +189,13 @@ char* List::toString(){
 	return str;
 }
 
+char* List::toString(int &len){
+	
+	len = elementCount+1;
+	
+	return toString();
+	
+}
 
 
 

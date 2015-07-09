@@ -26,13 +26,14 @@ class List
 		bool isEmpty(){return empty;} 
 		
 		char* toString(); //Ausgabe der Liste als Zeichenkette
+		char* toString(int &len); //Ausgabe der Liste als Zeichenkette mit Anzahl der Zeichen
 		
 		char pop(); 			//entferen Element vom Anfang Ende der Liste
 		char pull();			//entferen Element vom Ende der Liste
 		void push(char c);  	//am Anfang anfügen
 		void push(List* li);	//Liste am Anfang anfügen
 		void append(char c);	//am Ende anfügen
-		
+		void append(List* li);  //Liste am Ende anfügen
 	
 	};
 

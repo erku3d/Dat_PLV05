@@ -1,6 +1,5 @@
 #include<cstdio>
 #include"list.h"
-#include"string.h"
 #include"tree.h"
 
 int isOperator(char c){
@@ -67,14 +66,17 @@ char* generateDyadicExpression(const char* str){
 	List* tmp,*tmp2;	
 	
 	while(pos >= 0 ){
-						
-		tmp = getNextOperand(str,pos); //lies den nächsten Operanden (mit evtl. Vorzeichen)
 		
-		//pos steht jetzt vor dem Operanden
+		if(isOperator(str[pos]) == 0){
 		
-		expr->push(tmp); //in Liste Einfügen
-		
-		delete tmp;
+			tmp = getNextOperand(str,pos); //lies den nächsten Operanden (mit evtl. Vorzeichen)
+			
+			//pos steht jetzt vor dem Operanden -> auf einem Operator
+			
+			expr->push(tmp); //in Liste Einfügen
+			
+			delete tmp;
+		}
 				
 		if(isOperator(str[pos]) == 1){ //Addition oder Subtraktion
 			
@@ -84,7 +86,7 @@ char* generateDyadicExpression(const char* str){
 			pos--;
 						
 			tmp = getNextOperand(str,pos);		
-										
+												
 			while(isOperator(str[pos]) == 2){ //Multiplikation
 				
 				//Multiplikation bindet stärker 
@@ -117,7 +119,7 @@ char* generateDyadicExpression(const char* str){
 		while(isOperator(str[pos]) == 2 && pos >=0){ //Multiplikation
 								
 			expr->append(')');
-			expr->push(str[pos]);
+			expr->push(str[pos]); //operator *
 			
 			pos--;
 			
@@ -149,25 +151,37 @@ int main(int argc, const char* argv[]){
 		return 0;
 	}
 	
-	printf("%s\n",argv[1]);
+	printf("Eingabe: %s\n",argv[1]);
 	
 	char* str = generateDyadicExpression(argv[1]);
 	
 	printf("geklammert: %s \n",str);
 	 
 	
-	//delete[] str;
+	
 	
 	Tree* t = new Tree();
 	
 	t->generateTreeFromCharArray(str);
 	
+	delete[] str;
 	
 	char* s = t->ausgabePostorder();
 		
 	printf("Postorder: \n%s\n",s);
 	
 	delete[] s;
+	
+	t->optimieren();
+	
+	
+	char c = '0';
+	
+	int i = (int)c - (int)'0';
+	
+	printf("%c -> %d\n",c,i);
+	
+	
 	delete t;
 	
 	return 1;
